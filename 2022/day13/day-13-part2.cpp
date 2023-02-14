@@ -7,8 +7,6 @@
 
 using namespace std;
 
-using namespace std;
-
 vector<string> split(string line)
 {
     line = line.substr(1, line.size() - 2);

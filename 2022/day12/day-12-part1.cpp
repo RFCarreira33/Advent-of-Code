@@ -75,7 +75,7 @@ int BFS(Mountain mountain, Coordenates start, Coordenates end)
     // input sizes
     int m = mountain.size(), n = mountain[0].size();
     // explored should mimic matrix size
-    vector<vector<bool>> explored(m, std::vector<bool>(n, false));
+    vector<vector<bool>> explored(m, vector<bool>(n, false));
     explored[start.x][start.y] = true;
     queue<pair<Coordenates, int>> q;
     q.push({start, 0});
