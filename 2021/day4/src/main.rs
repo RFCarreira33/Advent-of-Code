@@ -100,6 +100,7 @@ fn parse_input() -> (VecDeque<i32>, Vec<Board>) {
     return (queue, boards);
 }
 
+#[allow(dead_code)]
 fn part1(mut queue: VecDeque<i32>, mut boards: Vec<Board>) -> i32 {
     while let Some(number) = queue.pop_front() {
         for board in &mut boards.iter_mut() {

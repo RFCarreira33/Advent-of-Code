@@ -8,6 +8,7 @@ fn parse_input() -> Vec<i32> {
         .collect();
 }
 
+#[allow(dead_code)]
 fn part1(input: Vec<i32>) -> i32 {
     let mut count: i32 = -1;
     let mut prev_number: i32 = 0;

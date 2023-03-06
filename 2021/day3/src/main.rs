@@ -10,6 +10,7 @@ fn parse_input() -> Vec<String> {
         .collect();
 }
 
+#[allow(dead_code)]
 fn part1(input: Vec<String>) -> i32 {
     //create a vector of 12 bits initialized to 0 if the bit is > 0 then it is a 1 else it is a 0
     let mut bits: Vec<i32> = vec![0; NUM_OF_BITS];

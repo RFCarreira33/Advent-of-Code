@@ -8,6 +8,7 @@ fn parse_input() -> Vec<String> {
         .collect();
 }
 
+#[allow(dead_code)]
 fn part1(input: Vec<String>) -> i32 {
     let mut depth: i32 = 0;
     let mut horizontal: i32 = 0;
