@@ -4,4 +4,4 @@ I started with the year 2022 and I plan on solving the previous year's challenge
 
 - 2022: Solved in C++, up to day 15
 - 2021: Solved in Rust, up to day 17
-- 2020: Solved in Go, up to day 5
+- 2020: Solved in Go, up to day 8
