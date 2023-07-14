@@ -16,8 +16,6 @@ const (
 	I_suspect = 1398413738
 )
 
-var MAX int
-
 func main() {
 	var part int
 	flag.IntVar(&part, "part", 1, "Part 1 or 2")
