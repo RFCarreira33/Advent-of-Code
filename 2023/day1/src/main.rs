@@ -65,6 +65,6 @@ fn convert_word_to_char(line: &String) -> String {
 
 fn main() {
     let input: Vec<String> = parse_input();
-    // println!("Part 1 = {}\n", part1(input));
+    // println!("Part 1 = {}", part1(input));
     println!("Part 2 = {}", part2(input));
 }
