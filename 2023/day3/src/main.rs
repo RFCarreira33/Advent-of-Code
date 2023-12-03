@@ -1,10 +1,9 @@
 use std::usize;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct Number {
     start: i32,
     end: i32,
-    line: i32,
     val: u32
 }
 
@@ -19,10 +18,10 @@ const HELPER: [(i32, i32); 8] = [
     (-1, 1),
 ];
 
-fn parse_input() -> (Vec<Number>, Vec<(i32, i32)>, Vec<(i32, i32)>) {
+fn parse_input() -> (Vec<Vec<Number>>, Vec<(i32, i32)>, Vec<(i32, i32)>) {
     let mut validators_p1: Vec<(i32, i32)> = vec![];
     let mut validators_p2: Vec<(i32, i32)> = vec![];
-    let mut numbers: Vec<Number> = vec![];
+    let mut numbers: Vec<Vec<Number>> = vec![vec![]; 140];
     std::fs::read_to_string("input.txt")
         .expect("Error reading file")
         .split_terminator("\n")
@@ -45,10 +44,9 @@ fn parse_input() -> (Vec<Number>, Vec<(i32, i32)>, Vec<(i32, i32)>) {
                     }
                 }
                 if current_num != 0 {
-                    numbers.push(Number {
+                    numbers[y].push(Number {
                         start:x as i32-current_num_len,
                         end:x as i32-1,
-                        line: y as i32,
                         val:current_num
                     });
                 }
@@ -56,10 +54,9 @@ fn parse_input() -> (Vec<Number>, Vec<(i32, i32)>, Vec<(i32, i32)>) {
                 current_num_len = 0;
             });
             if current_num != 0 {
-                numbers.push(Number {
+                numbers[y].push(Number {
                     start: str_size as i32 - current_num_len,
                     end: str_size as i32 - 1,
-                    line: y as i32,
                     val: current_num
               });
             }
@@ -68,39 +65,47 @@ fn parse_input() -> (Vec<Number>, Vec<(i32, i32)>, Vec<(i32, i32)>) {
 }
 
 #[allow(dead_code)]
-fn part1(mut input: Vec<Number>, validators: Vec<(i32, i32)>) -> u32 {
+fn part1(mut input: Vec<Vec<Number>>, validators: Vec<(i32, i32)>) -> u32 {
     let mut total = 0;
     validators.iter().for_each(|validator| {
         HELPER.iter().for_each(|(hx, hy)| {
-            let mut post_index:i32 = -1;
-            for (index, number) in input.iter().enumerate() {
-                let nx = validator.0 + hx;
-                if nx >= number.start && nx <= number.end && validator.1 + hy == number.line {
-                    total += number.val;
-                    post_index = index as i32;
-                }
+            let nx = validator.0 + hx;
+            let ny = validator.1 + hy;
+            if ny < 0 || ny >= input.len() as i32 {
+                return;
             }
+            let mut post_index:i32 = -1;
+            input[ny as usize].iter().enumerate().for_each(|(i, number)| {
+                if nx >= number.start && nx <= number.end  {
+                    total += number.val;
+                    post_index = i as i32;
+                }
+            });
             if post_index != -1 {
-                input.remove(post_index as usize);
+                input[ny as usize].remove(post_index as usize);
             }
         })
     });
     total
 }
 
-fn part2(mut input: Vec<Number>, validators: Vec<(i32, i32)>) -> u32 {
+fn part2(mut input: Vec<Vec<Number>>, validators: Vec<(i32, i32)>) -> u32 {
     let mut total = 0;
     validators.iter().for_each(|validator| {
         let mut first_gear = 0;
         let mut second_gear = 0;
         HELPER.iter().for_each(|(hx, hy)| {
-            let mut post_index:i32 = -1;
             if first_gear != 0 && second_gear != 0 {
                 return;
             }
-            input.iter().enumerate().for_each(|(i, number)| {
-                let nx = validator.0 + hx;
-                if nx >= number.start && nx <= number.end && validator.1 + hy == number.line {
+            let nx = validator.0 + hx;
+            let ny = validator.1 + hy;
+            if ny < 0 || ny >= input.len() as i32 {
+                return;
+            }
+            let mut post_index:i32 = -1;
+            input[ny as usize].iter().enumerate().for_each(|(i, number)| {
+                if nx >= number.start && nx <= number.end  {
                     post_index = i as i32;
                     if first_gear == 0 {
                         first_gear = number.val;
@@ -112,7 +117,7 @@ fn part2(mut input: Vec<Number>, validators: Vec<(i32, i32)>) -> u32 {
                 }
             });
             if post_index != -1 {
-                input.remove(post_index as usize);
+                input[ny as usize].remove(post_index as usize);
             }
         });
         total += first_gear * second_gear
