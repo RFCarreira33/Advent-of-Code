@@ -138,10 +138,8 @@ fn part2(mut input : HashMap<HandType, Vec<Hand>>) -> u32 {
 
 fn main() {
     let input: HashMap<HandType, Vec<Hand>> = parse_input(true);
-    let time = std::time::Instant::now();
     // println!("Part 1 = {}", part1(input));
     println!("Part 2 = {}", part2(input));
-    println!("Time = {:?}", std::time::Instant::now() - time);
 }
 
 
