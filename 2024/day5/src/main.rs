@@ -55,7 +55,7 @@ fn part1(pages: Vec<Vec<i32>>, prio: HashMap<i32, Vec<i32>>) -> i32 {
                 }
 
                 if let Some(entry) = prio.get(&n) {
-                    is_valid = !find_in_vec(entry, *num);
+                    is_valid = !entry.contains(num);
                 }
             });
         });
@@ -66,14 +66,6 @@ fn part1(pages: Vec<Vec<i32>>, prio: HashMap<i32, Vec<i32>>) -> i32 {
     });
 
     total
-}
-
-fn find_in_vec(vec: &Vec<i32>, to_find: i32) -> bool {
-    if let Some(_) = vec.iter().find(|&&n| n == to_find) {
-        return true;
-    }
-
-    false
 }
 
 fn part2(pages: Vec<Vec<i32>>, prio: HashMap<i32, Vec<i32>>) -> i32 {
@@ -92,7 +84,7 @@ fn part2(pages: Vec<Vec<i32>>, prio: HashMap<i32, Vec<i32>>) -> i32 {
                 }
 
                 if let Some(entry) = prio.get(&n) {
-                    is_valid = !find_in_vec(entry, *num);
+                    is_valid = !entry.contains(num);
                 }
             });
         });
@@ -101,13 +93,13 @@ fn part2(pages: Vec<Vec<i32>>, prio: HashMap<i32, Vec<i32>>) -> i32 {
             let mut sorted = page.clone();
             sorted.sort_by(|a, b| {
                 if let Some(a_prio) = prio.get(a) {
-                    if find_in_vec(a_prio, *b) {
+                    if a_prio.contains(b) {
                         return Ordering::Less;
                     }
                 }
 
                 if let Some(b_prio) = prio.get(b) {
-                    if find_in_vec(b_prio, *a) {
+                    if b_prio.contains(a) {
                         return Ordering::Greater;
                     }
                 }
