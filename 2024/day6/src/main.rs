@@ -1,4 +1,4 @@
-use std::{cmp::Ordering, collections::{HashMap, HashSet}, time::Instant, usize, vec};
+use std::{collections:: HashSet, usize};
 
 const HELPER: [(i32, i32); 4] = [(-1, 0), (0, 1), (1, 0), (0, -1)];
 
@@ -18,6 +18,7 @@ fn parse_input() -> (Vec<Vec<char>>, (i32, i32)) {
                     vec_line.push('.');
                     return;
                 }
+
                 vec_line.push(c);
             });
             vec1.push(vec_line);
@@ -34,17 +35,20 @@ fn is_in_bounds(x: i32, y: i32, max: i32) -> bool {
     true
 }
 
-fn part1(map: Vec<Vec<char>>, start: (i32, i32)) -> i32 {
-    let max = map.len() as i32 - 1;
-    let mut dir = 0;
-    let (mut x, mut y): (i32, i32) = (start.0, start.1);
-    let mut visited: HashSet<(i32, i32)> = HashSet::new();
+fn run_loop(map: &Vec<Vec<char>>, pos: (i32, i32), dir: usize, max: i32, part2: bool) -> i32 {
+    let mut visited: HashSet<((i32, i32), Option<usize>)> = HashSet::new();
+    let (mut x, mut y) = pos;
+    let mut dir = dir;
 
     loop {
         let hx = x + HELPER[dir].0;
         let hy = y + HELPER[dir].1;
         if !is_in_bounds(hx, hy, max) {
-            break;
+            if part2 {
+                return 0
+            }
+
+            return visited.len() as i32 + 1;
         }
 
         if map[hx as usize][hy as usize] == '#' {
@@ -52,18 +56,44 @@ fn part1(map: Vec<Vec<char>>, start: (i32, i32)) -> i32 {
             continue;
         }
 
-        visited.insert((x,y));
+        if part2 && visited.contains(&((hx, hy), Some(dir))) {
+            return 1;
+        }
+
+        if part2 {
+            visited.insert(((x,y), Some(dir)));
+        } else {
+            visited.insert(((x,y), None));
+        }
+
         x = hx;
         y = hy;
     }
-    
-    visited.len() as i32 + 1
 }
 
-fn part2(map: Vec<Vec<char>>, start: (i32, i32)) -> i32 {
-    let mut total: i32 = 0;
+fn part1(map: &Vec<Vec<char>>, start: &(i32, i32)) -> i32 {
+    run_loop(&map, *start, 0, (map.len() as i32) - 1, false)
+}
 
-    total
+fn part2(mut map: Vec<Vec<char>>, start: &(i32, i32)) -> i32 {
+    let mut blocked: HashSet<(i32, i32)> = HashSet::new();
+    let max = map.len() as i32 - 1;
+
+    (0..max).for_each(|i| {
+        (0..max).for_each(|j| {
+            if map[i as usize][j as usize] == '#' {
+                return;
+            }
+
+            map[i as usize][j as usize] = '#';
+            if run_loop(&map, *start, 0, max, true) == 1 {
+                blocked.insert((i, j));
+            }
+            map[i as usize][j as usize] = '.';
+        });
+    });
+
+    blocked.len() as i32
 }
 
 fn main() {
@@ -74,17 +104,14 @@ fn main() {
     }
 
     let ( map, start ) = parse_input();
-    let time = Instant::now();
     match args[1].as_str() {
         "1" => {
-            println!("Part 1: {}", part1(map, start));
+            println!("Part 1: {}", part1(&map, &start));
         }
         "2" => {
-            println!("Part 2: {}", part2(map, start));
+            println!("Part 2: {}", part2(map, &start));
         }
         _ => println!("Invalid argument. Please use 1 or 2"),
     }
-
-    println!("{:?}", time.elapsed());
 }
 
