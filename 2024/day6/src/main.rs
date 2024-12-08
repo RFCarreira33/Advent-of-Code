@@ -78,20 +78,33 @@ fn part1(map: &Vec<Vec<char>>, start: &(i32, i32)) -> i32 {
 fn part2(mut map: Vec<Vec<char>>, start: &(i32, i32)) -> i32 {
     let mut blocked: HashSet<(i32, i32)> = HashSet::new();
     let max = map.len() as i32 - 1;
+    let mut visited: HashSet<(i32, i32)> = HashSet::new();
+    let (mut x, mut y) = start;
+    let mut dir = 0;
 
-    (0..max).for_each(|i| {
-        (0..max).for_each(|j| {
-            if map[i as usize][j as usize] == '#' {
-                return;
-            }
+    loop {
+        let hx = x + HELPER[dir].0;
+        let hy = y + HELPER[dir].1;
+        if !is_in_bounds(hx, hy, max) {
+            break;
+        }
 
-            map[i as usize][j as usize] = '#';
-            if run_loop(&map, *start, 0, max, true) == 1 {
-                blocked.insert((i, j));
-            }
-            map[i as usize][j as usize] = '.';
-        });
-    });
+        if map[hx as usize][hy as usize] == '#' {
+            dir = (dir + 1) % 4;
+            continue;
+        }
+
+        map[hx as usize][hy as usize] = '#';
+        if !visited.contains(&(hx, hy)) && run_loop(&map, (x, y), dir, max, true) == 1 {
+            blocked.insert((hx, hy));
+        }
+        map[hx as usize][hy as usize] = '.';
+
+        visited.insert((x,y));
+
+        x = hx;
+        y = hy;
+    }
 
     blocked.len() as i32
 }
