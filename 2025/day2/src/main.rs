@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 struct IdRange {
     start: i64,
     end: i64,
@@ -31,39 +29,61 @@ fn part1(input: Vec<IdRange>) -> i64 {
     let mut total: i64 = 0;
 
     input.iter().for_each(|id_range| {
-        (id_range.start..=id_range.end).for_each(|i| {
-            let id_str = i.to_string();
+        (id_range.start..=id_range.end).for_each(|id_val| {
+            let id_str = id_val.to_string();
             let len = id_str.len();
 
             if len % 2 != 0 {
                 return;
             }
 
-            let half_len = len / 2;
-            if id_str[..half_len] == id_str[half_len..] {
-                total += i as i64;
+            let half = len / 2;
+            if id_str[half..] == id_str[..half] {
+                return;
             }
+
+            total += id_val;
         })
     });
 
     total
 }
 
+fn check_valid(id_str: &str, j: usize) -> bool {
+    let pattern: Vec<char> = id_str.chars().take(j).collect();
+
+    for window in id_str
+        .chars()
+        .skip(j)
+        .collect::<Vec<char>>()
+        .windows(j)
+        .step_by(j)
+    {
+        if window != pattern {
+            return false;
+        }
+    }
+
+    true
+}
+
 fn part2(input: Vec<IdRange>) -> i64 {
     let mut total: i64 = 0;
 
     input.iter().for_each(|id_range| {
-        (id_range.start..=id_range.end).for_each(|i| {
-            let id_str = i.to_string();
+        (id_range.start..=id_range.end).for_each(|id_val| {
+            let id_str = id_val.to_string();
             let len = id_str.len();
 
-            if len % 2 != 0 {
-                return;
-            }
+            for j in 1..=(len / 2) {
+                if len % j != 0 {
+                    continue;
+                }
 
-            let half_len = len / 2;
-            if id_str[..half_len] == id_str[half_len..] {
-                total += i as i64;
+                if check_valid(&id_str, j) {
+                    total += id_val;
+                    break;
+                }
             }
         })
     });
