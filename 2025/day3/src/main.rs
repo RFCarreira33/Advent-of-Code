@@ -1,4 +1,3 @@
-
 fn parse_input() -> Vec<Vec<u32>> {
     let mut banks: Vec<Vec<u32>> = Vec::new();
 
@@ -16,47 +15,21 @@ fn parse_input() -> Vec<Vec<u32>> {
     banks
 }
 
-fn concat_digits(a: u32, b: u32) -> u32 {
-    a / 10 * 10 + b
-}
-
 fn part1(input: Vec<Vec<u32>>) -> u32 {
     let mut total: u32 = 0;
 
     input.iter().for_each(|bank| {
-        let mut highest: u32 = 0;
-        let mut second_highest: u32 = 0;
+        let len = bank.len() - 1;
+        let (max_index, max_value) = bank
+            .iter()
+            .rev()
+            .skip(1)
+            .enumerate()
+            .max_by_key(|&(_, value)| value)
+            .unwrap();
 
-        bank.iter().for_each(|bat| {
-            let ten_x = *bat * 10;
-
-            if ten_x > highest {
-                second_highest = highest;
-                highest = ten_x;
-                return;
-            } 
-
-            if concat_digits(highest, *bat) > highest {
-                second_highest = highest;
-                highest = concat_digits(highest, *bat);
-                return;
-            }
-
-            if ten_x > second_highest {
-                second_highest = ten_x;
-                return;
-            }
-
-            if concat_digits(second_highest, *bat) > second_highest {
-                second_highest = concat_digits(second_highest, *bat);
-                return;
-            }
-        });
-
-        if highest % 10 == 0 {
-            highest = second_highest / 10 * 10 + highest / 10;
-        }
-        total += highest
+        total += 10u32.pow(1) * max_value;
+        total += 10u32.pow(0) * bank.iter().skip(len - max_index).max().unwrap_or(&0);
     });
 
     total
@@ -64,6 +37,27 @@ fn part1(input: Vec<Vec<u32>>) -> u32 {
 
 fn part2(input: Vec<Vec<u32>>) -> u64 {
     let mut total: u64 = 0;
+
+    input.iter().for_each(|bank| {
+        let mut jolt: u64 = 0;
+        let mut max_index = bank.len() - 11;
+
+        (0..=11).rev().for_each(|i| {
+            let (temp_max_index, max_value) = bank
+                .iter()
+                .rev()
+                .skip(i)
+                .take(max_index)
+                .enumerate()
+                .max_by_key(|&(_, value)| value)
+                .unwrap();
+
+            max_index = temp_max_index + 1;
+            jolt += 10u64.pow(i as u32) * *max_value as u64;
+        });
+
+        total += jolt;
+    });
 
     total
 }
